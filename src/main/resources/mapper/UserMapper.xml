@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<mapper namespace="com.example.database.demo.UserMapper">
+    <select id="queryList" resultType="com.example.database.demo.entity.User">
+        select * from user
+    </select>
+</mapper>
+
+
