@@ -5,6 +5,7 @@ import com.example.database.frame.mapper.MapperData;
 import com.example.database.frame.session.SqlSession;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -23,6 +24,9 @@ public class MapperProxy implements InvocationHandler {
     // 实现InvocationHandler接口的invoke()方法
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Exception {
+        if (Object.class.equals(method.getDeclaringClass())) {
+            return method.invoke(this, args);
+        }
         String methodName = method.getName();
         String className = method.getDeclaringClass().getName();
         String key = className + FrameConstants.HEAD_LINE + methodName;
@@ -30,7 +34,11 @@ public class MapperProxy implements InvocationHandler {
         if (mapperData == null) {
             throw new IllegalArgumentException("传入参数有误");
         }
-        return sqlSession.selectList(mapperData, args);
+        if (null==mapperData.getParams()||mapperData.getParams().isEmpty()) {
+            mapperData.setParams(mapperData.getParams(method,false));
+            mappers.put(key,mapperData);
+        }
+        return mapperData.execute(sqlSession,args);
 
     }
 }

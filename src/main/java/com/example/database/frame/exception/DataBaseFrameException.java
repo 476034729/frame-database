@@ -2,9 +2,6 @@
 package com.example.database.frame.exception;
 
 
-/**
- * @author Clinton Begin
- */
 public class DataBaseFrameException extends RuntimeException {
 
   private static final long serialVersionUID = -353418993628421873L;

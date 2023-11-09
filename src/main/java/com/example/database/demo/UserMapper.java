@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface UserMapper {
 
-    List<User> queryList();
+    List<User> queryList(String id,String name);
 }
