@@ -22,9 +22,12 @@ public class DemoTest {
         SqlSessionFactory sqlSessionFactory= new SqlSessionFactoryBuilder().build(configuration);
         SqlSession session=sqlSessionFactory.openSession();
         UserMapper userMapper=session.getMapper(UserMapper.class);
-        List<User> users=userMapper.queryList("1","1");
+        List<User> users=userMapper.queryList("111222","wwwww","adress123");
 //        System.out.println("====================" +users.get(0));
-        List<User> users2=userMapper.queryList("1","1");
+//        User user=new User();
+//        user.setId(123L);
+//        user.setName("123");
+//        List<User> users2=userMapper.queryListById(user);
 //        System.out.println("====================" +users2.get(0));
     }
 }

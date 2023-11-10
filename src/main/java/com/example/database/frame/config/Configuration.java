@@ -77,8 +77,8 @@ public class Configuration {
         mappers.put(key, mapperData);
     }
 
-    public void getMapperData(String key) {
-        mappers.get(key);
+    public MapperData getMapperData(String key) {
+        return mappers.get(key);
     }
     public Map<String, MapperData> getMappers() {
         return mappers;

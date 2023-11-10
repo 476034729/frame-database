@@ -1,34 +1,35 @@
 package com.example.database.frame.handler.excutor;
 
+import com.example.database.frame.config.Configuration;
+import com.example.database.frame.config.DataSource;
 import com.example.database.frame.mapper.MapperData;
 import com.example.database.frame.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 // 自定义Executor类
-public class Executor {
+public class Executor implements IExecutor{
+    private final Configuration configuration;
+    private final Connection connection;
 
-    // query()方法将selectList()的返回结果转换为Object类型
-    public <T> List<T> queryList(MapperData mapperData, Connection connection) {
-        return selectList(mapperData, connection);
+    public Executor(Configuration configuration) {
+        this.configuration = configuration;
+        this.connection=getConnection();
     }
 
     /**
      * selectList()方法
      *
      * @param mapperData mapper接口
-     * @param connection 数据库连接
      * @param <T>        泛型
      * @return 结果
      */
-    public <T> List<T> selectList(MapperData mapperData, Connection connection) {
+    @Override
+    public <T> List<T> selectList(MapperData mapperData,Object params) {
 
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -96,6 +97,31 @@ public class Executor {
         if (preparedStatement != null) {
             try {
                 preparedStatement.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Connection getConnection() {
+        DataSource dataSource = configuration.getDataSource();
+        try {
+            Class.forName(dataSource.getDriver());
+            return DriverManager.getConnection(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /**
+     * 用于释放资源
+     */
+    @Override
+    public void close() {
+        if (connection != null) {
+            try {
+                connection.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }

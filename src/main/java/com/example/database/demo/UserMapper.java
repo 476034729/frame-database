@@ -1,6 +1,7 @@
 package com.example.database.demo;
 
 import com.example.database.demo.entity.User;
+import com.example.database.frame.annotation.ParamBody;
 
 import java.util.List;
 
@@ -10,5 +11,6 @@ import java.util.List;
  */
 public interface UserMapper {
 
-    List<User> queryList(String id,String name);
+    List<User> queryList(String id,String name,String address);
+    List<User> queryListById(@ParamBody("user") User user);
 }

@@ -1,24 +1,25 @@
 package com.example.database.frame.proxy;
 
+import com.example.database.frame.config.Configuration;
 import com.example.database.frame.constants.FrameConstants;
 import com.example.database.frame.mapper.MapperData;
+import com.example.database.frame.mapper.MapperMethod;
 import com.example.database.frame.session.SqlSession;
 
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
 // 自定义MapperProxyFactory类
 public class MapperProxy implements InvocationHandler {
-    // mappers集合
-    private final Map<String, MapperData> mappers;
-
     private final SqlSession sqlSession;
+    private final Configuration configuration;
+    private final Map<Method, MapperMethod> methodCache;
 
-    public MapperProxy(Map<String, MapperData> mappers, SqlSession sqlSession) {
-        this.mappers = mappers;
+    public MapperProxy(Configuration configuration, SqlSession sqlSession, Map<Method, MapperMethod> methodCache) {
+        this.configuration = configuration;
         this.sqlSession = sqlSession;
+        this.methodCache = methodCache;
     }
 
     // 实现InvocationHandler接口的invoke()方法
@@ -30,15 +31,20 @@ public class MapperProxy implements InvocationHandler {
         String methodName = method.getName();
         String className = method.getDeclaringClass().getName();
         String key = className + FrameConstants.HEAD_LINE + methodName;
-        MapperData mapperData = mappers.get(key);
+        MapperData mapperData =configuration.getMapperData(key);
         if (mapperData == null) {
             throw new IllegalArgumentException("传入参数有误");
         }
-        if (null==mapperData.getParams()||mapperData.getParams().isEmpty()) {
-            mapperData.setParams(mapperData.getParams(method,false));
-            mappers.put(key,mapperData);
-        }
-        return mapperData.execute(sqlSession,args);
+        MapperMethod mapperMethod = this.cachedMapperMethod(method,mapperData,key);
+        return mapperMethod.execute(sqlSession,args);
+    }
 
+    private MapperMethod cachedMapperMethod(Method method,MapperData mapperData,String key) {
+        MapperMethod mapperMethod =this.methodCache.get(method);
+        if (mapperMethod == null) {
+            mapperMethod = new MapperMethod(mapperData.getSqlCommandType(),method, key);
+            this.methodCache.put(method, mapperMethod);
+        }
+        return mapperMethod;
     }
 }

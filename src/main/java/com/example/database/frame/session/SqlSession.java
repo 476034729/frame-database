@@ -15,10 +15,13 @@ public interface SqlSession {
      */
     <T> T getMapper(Class<T> tClass);
 
-    <T> List<T> selectList(MapperData mapperData, Object parameter) throws Exception;
+    <T> List<T> selectList(String statementKey, Object parameters) throws Exception;
 
-    /**
-     * 释放资源
-     */
-    void close();
+    <T> T selectOne(String statementKey, Object parameters);
+    int insert(String statementKey, Object parameters);
+
+    int update(String statementKey, Object parameters);
+
+    int delete(String statementKey, Object parameters);
+
 }
