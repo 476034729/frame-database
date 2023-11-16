@@ -2,6 +2,7 @@ package com.example.database.frame.builder;
 
 
 import com.example.database.frame.config.Configuration;
+import com.example.database.frame.exception.DataBaseFrameException;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -23,7 +24,7 @@ public class XMLConfigBuilder {
 
     public void parseMapper() {
         if (null == configuration.getMapperList()) {
-            throw new RuntimeException("mapper is not scan or mapper is null");
+            throw new DataBaseFrameException("mapper is not scan or mapper is null");
         }
         for (String mapperPath : configuration.getMapperList()) {
             String resource = "src/main/resources/" + mapperPath;
@@ -31,7 +32,7 @@ public class XMLConfigBuilder {
                 XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource);
                 mapperParser.parse();
             } catch (Exception e) {
-                throw new RuntimeException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
+                throw new DataBaseFrameException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
             }
         }
 

@@ -16,6 +16,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import com.example.database.frame.exception.DataBaseFrameException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -205,7 +206,7 @@ public class XPathParser {
     try {
       return xpath.evaluate(expression, root, returnType);
     } catch (Exception e) {
-      throw new RuntimeException("Error evaluating XPath.  Cause: " + e, e);
+      throw new DataBaseFrameException("Error evaluating XPath.  Cause: " + e, e);
     }
   }
 
@@ -242,7 +243,7 @@ public class XPathParser {
       });
       return builder.parse(inputSource);
     } catch (Exception e) {
-      throw new RuntimeException("Error creating document instance.  Cause: " + e, e);
+      throw new DataBaseFrameException("Error creating document instance.  Cause: " + e, e);
     }
   }
 

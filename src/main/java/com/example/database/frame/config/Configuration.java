@@ -1,12 +1,21 @@
 package com.example.database.frame.config;
 
+import com.example.database.frame.exception.DataBaseFrameException;
 import com.example.database.frame.mapper.MapperData;
+import com.example.database.frame.metadata.TableFieldInfo;
+import com.example.database.frame.metadata.TableInfoHelper;
+import com.example.database.frame.util.ScannerUtil;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.jar.JarFile;
 
 public class Configuration {
     private Properties configProperties = new Properties();
@@ -33,11 +42,13 @@ public class Configuration {
         initDataSource();
         //扫描mapper文件
         scanMapper();
+        //扫描实体
+        scanEntity();
     }
 
     public void loadConfigProperties() {
         if (this.configLocation == null) {
-            throw new RuntimeException("configLocation is not null!");
+            throw new DataBaseFrameException("configLocation is not null!");
         }
         try (InputStream inputStream = Files.newInputStream(Paths.get("src/main/resources/" + configLocation))) {
             this.configProperties.load(inputStream);
@@ -58,11 +69,19 @@ public class Configuration {
         }
     }
 
+    public void scanEntity() {
+        String packageName = configProperties.getProperty("entity.package");
+        Set<Class<?>> classes=ScannerUtil.scanClass(packageName);
+        TableInfoHelper.initTableInfo(this,classes);
+    }
+
+
+
     public void initDataSource() {
         this.dataSource = new DataSource(configProperties.getProperty("jdbc.url"),
-                                         configProperties.getProperty("jdbc.driver"),
-                                         configProperties.getProperty("jdbc.username"),
-                                         configProperties.getProperty("jdbc.password"));
+                configProperties.getProperty("jdbc.driver"),
+                configProperties.getProperty("jdbc.username"),
+                configProperties.getProperty("jdbc.password"));
     }
 
     public boolean isResourceLoaded(String resource) {
@@ -80,6 +99,7 @@ public class Configuration {
     public MapperData getMapperData(String key) {
         return mappers.get(key);
     }
+
     public Map<String, MapperData> getMappers() {
         return mappers;
     }

@@ -1,23 +1,39 @@
 package com.example.database.demo.entity;
 
+import com.example.database.frame.annotation.TableField;
+import com.example.database.frame.annotation.TableId;
+import com.example.database.frame.annotation.TableName;
+
 import java.util.Date;
 
 /**
  * @author TANGZHEN
  * @createDate 2023-11-05
  */
+@TableName("user")
 public class User {
 
+    @TableId("id")
     private Long id;
+    @TableField("name")
     private String name;
+    @TableField("address")
     private String address;
+    @TableField("num")
     private Integer num;
+    @TableField("del_flag")
     private Integer delFlag;
+    @TableField("create_date")
     private Date createDate;
+    @TableField("type")
     private String type;
+    @TableField("teacher_id")
     private Long teacherId;
+    @TableField("teacher_name")
     private String teacherName;
+    @TableField("school_id")
     private Long schoolId;
+    @TableField("school_name")
     private String schoolName;
 
     public Long getId() {

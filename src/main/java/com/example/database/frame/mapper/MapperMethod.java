@@ -68,12 +68,12 @@ public class MapperMethod {
             param = this.convertArgsToSqlCommandParam(args);
         } else {
             param = this.convertArgsToSqlCommandParam(args);
-            sqlSession.selectList(key, param);
             if (this.isIfReturnVoid()) {
                 result = null;
             } else if (this.isIfReturnMany()) {
+                result=sqlSession.selectList(key, param);
             } else {
-                param = this.convertArgsToSqlCommandParam(args);
+                result=sqlSession.selectOne(key, param);
             }
         }
         return result;

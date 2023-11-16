@@ -8,6 +8,7 @@ import com.example.database.frame.proxy.MapperProxyFactory;
 
 
 import java.util.List;
+import java.util.Map;
 
 public class DefaultSqlSession implements SqlSession {
 
@@ -35,14 +36,14 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
-    public <T> List<T> selectList(String statementKey, Object parameters) {
+    public <T> List<T> selectList(String statementKey, Map<String,Object> parameters) {
         // TODO: 2023/11/4  parameter 暂时没用
         return executor.selectList(configuration.getMapperData(statementKey), parameters);
     }
 
     @Override
-    public <T> T selectOne(String statementKey, Object parameters) {
-        return null;
+    public <T> T selectOne(String statementKey, Map<String,Object> parameters) {
+        return executor.selectOne(configuration.getMapperData(statementKey), parameters);
     }
 
     @Override

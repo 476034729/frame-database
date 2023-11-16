@@ -30,7 +30,7 @@ public class MapperData {
     }
 
     public String getSql() {
-        return sql;
+        return this.sql;
     }
 
     public Class<?> getParamType() {

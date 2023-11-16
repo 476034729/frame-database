@@ -2,6 +2,7 @@ package com.example.database.frame.proxy;
 
 import com.example.database.frame.config.Configuration;
 import com.example.database.frame.constants.FrameConstants;
+import com.example.database.frame.exception.DataBaseFrameException;
 import com.example.database.frame.mapper.MapperData;
 import com.example.database.frame.mapper.MapperMethod;
 import com.example.database.frame.session.SqlSession;
@@ -9,6 +10,7 @@ import com.example.database.frame.session.SqlSession;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.zip.DataFormatException;
 
 // 自定义MapperProxyFactory类
 public class MapperProxy implements InvocationHandler {
@@ -33,7 +35,7 @@ public class MapperProxy implements InvocationHandler {
         String key = className + FrameConstants.HEAD_LINE + methodName;
         MapperData mapperData =configuration.getMapperData(key);
         if (mapperData == null) {
-            throw new IllegalArgumentException("传入参数有误");
+            throw new DataBaseFrameException("传入参数有误");
         }
         MapperMethod mapperMethod = this.cachedMapperMethod(method,mapperData,key);
         return mapperMethod.execute(sqlSession,args);

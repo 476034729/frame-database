@@ -3,6 +3,7 @@ package com.example.database.frame.session;
 import com.example.database.frame.mapper.MapperData;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SqlSession {
 
@@ -15,9 +16,9 @@ public interface SqlSession {
      */
     <T> T getMapper(Class<T> tClass);
 
-    <T> List<T> selectList(String statementKey, Object parameters) throws Exception;
+    <T> List<T> selectList(String statementKey, Map<String,Object> parameters) throws Exception;
 
-    <T> T selectOne(String statementKey, Object parameters);
+    <T> T selectOne(String statementKey, Map<String,Object> parameters);
     int insert(String statementKey, Object parameters);
 
     int update(String statementKey, Object parameters);
