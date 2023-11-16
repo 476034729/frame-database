@@ -83,15 +83,16 @@ public class TableInfoHelper {
             tableInfo.setTableName(table.value());
             List<TableFieldInfo> tableFieldInfos = new ArrayList<>();
             for (Field field : clazz.getDeclaredFields()) {
-                TableField tableField = field.getAnnotation(TableField.class);
-                TableFieldInfo tableFieldInfo = new TableFieldInfo(field, tableField.value(), field.getName(), field.getType());
                 TableId tableId = field.getAnnotation(TableId.class);
                 if (tableId != null) {
                     tableInfo.setKeyColumn(tableId.value());
                     tableInfo.setKeyProperty(field.getName());
                     tableInfo.setKeyType(field.getType());
+                }else{
+                    TableField tableField = field.getAnnotation(TableField.class);
+                    TableFieldInfo tableFieldInfo = new TableFieldInfo(field, tableField.value(), field.getName(), field.getType());
+                    tableFieldInfos.add(tableFieldInfo);
                 }
-                tableFieldInfos.add(tableFieldInfo);
             }
             tableInfo.setTableFieldInfos(tableFieldInfos);
             TABLE_INFO_CACHE.put(clazz, tableInfo);

@@ -4,13 +4,6 @@ import com.example.database.frame.config.Configuration;
 
 import java.util.List;
 
-/**
- * 数据库表反射信息
- *
- * @author hubin
- * @since 2016-01-23
- */
-
 
 public class TableInfo {
     private Configuration configuration;
