@@ -48,6 +48,10 @@ public class TableInfoHelper {
         return TABLE_NAME_INFO_CACHE.get(tableName);
     }
 
+    public static TableInfo getTableInfo(Class<?> clazz) {
+        return TABLE_INFO_CACHE.get(clazz);
+    }
+
     /**
      * <p>
      * 获取所有实体映射表信息

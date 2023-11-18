@@ -1,5 +1,7 @@
 package com.example.database.frame.metadata;
 
+import com.example.database.frame.util.SqlScriptUtils;
+
 import java.lang.reflect.Field;
 
 /**
@@ -18,6 +20,8 @@ public class TableFieldInfo {
      * 字段名
      */
     private final String column;
+    private final String el;
+
     /**
      * 属性名
      */
@@ -32,6 +36,11 @@ public class TableFieldInfo {
         this.column = column;
         this.property = property;
         this.propertyType = propertyType;
+        this.el = this.property;
+    }
+
+    public String getEl() {
+        return el;
     }
 
     public Field getField() {
@@ -48,5 +57,23 @@ public class TableFieldInfo {
 
     public Class<?> getPropertyType() {
         return propertyType;
+    }
+
+
+    public String getInsertSqlColumnMaybeIf(final String prefix) {
+        String newPrefix = prefix == null ? "" : prefix;
+        return this.getInsertSqlColumn();
+    }
+    public String getInsertSqlColumn() {
+        return this.column + ",";
+    }
+    public String getInsertSqlPropertyMaybeIf(final String prefix) {
+        String newPrefix = prefix == null ? "" : prefix;
+        return this.getInsertSqlProperty(newPrefix);
+    }
+
+    public String getInsertSqlProperty(final String prefix) {
+        String newPrefix = prefix == null ? "" : prefix;
+        return SqlScriptUtils.safeParam(newPrefix + this.el) + ",";
     }
 }

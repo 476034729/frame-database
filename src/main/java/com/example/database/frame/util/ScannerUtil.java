@@ -5,6 +5,7 @@ import com.example.database.frame.config.Configuration;
 import java.io.File;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -23,7 +24,7 @@ public class ScannerUtil {
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
                 if ("file".equals(url.getProtocol())) {
-                    String file = URLDecoder.decode(url.getFile(), "UTF-8");
+                    String file = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8);
                     findClassesInPackageByFile(packageName, file, true, classes);
                 }
             }

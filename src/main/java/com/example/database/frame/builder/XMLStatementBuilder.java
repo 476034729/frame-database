@@ -1,6 +1,4 @@
-
 package com.example.database.frame.builder;
-
 
 import com.example.database.frame.config.Configuration;
 import com.example.database.frame.enums.SqlCommandType;
@@ -15,7 +13,9 @@ import static com.example.database.frame.constants.FrameConstants.HEAD_LINE;
 public class XMLStatementBuilder {
 
     private final XNode context;
+
     private final String nameSpace;
+
     private final Configuration configuration;
 
     public XMLStatementBuilder(String nameSpace, XNode context, Configuration configuration) {
@@ -33,7 +33,10 @@ public class XMLStatementBuilder {
         String resultType = context.getStringAttribute("resultType");
         Class<?> resultTypeClass = ResolveUtil.resolveClass(resultType);
         String key = nameSpace + HEAD_LINE + id;
-        MapperData mapperData=new MapperData(context.getStringBody().trim(),resultTypeClass,parameterTypeClass,sqlCommandType);
-        configuration.putMapperData(key,mapperData);
+        if (configuration.checkIsExist(key)) {
+            return;
+        }
+        MapperData mapperData = new MapperData(context.getStringBody().trim(), resultTypeClass, parameterTypeClass, sqlCommandType);
+        configuration.putMapperData(key, mapperData);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.database.demo;
 
 import com.example.database.demo.entity.User;
+import com.example.database.demo.mapper.UserMapper;
 import com.example.database.frame.builder.XMLConfigBuilder;
 import com.example.database.frame.config.Configuration;
 import com.example.database.frame.session.SqlSession;

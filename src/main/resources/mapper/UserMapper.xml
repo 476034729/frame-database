@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<mapper namespace="com.example.database.demo.UserMapper">
+<mapper namespace="com.example.database.demo.mapper.UserMapper">
     <select id="queryList" resultType="com.example.database.demo.entity.User">
         select * from user
     </select>

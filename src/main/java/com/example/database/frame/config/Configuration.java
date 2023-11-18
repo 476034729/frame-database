@@ -1,6 +1,9 @@
 package com.example.database.frame.config;
 
+import com.example.database.frame.annotation.Mapper;
+import com.example.database.frame.annotation.TableName;
 import com.example.database.frame.exception.DataBaseFrameException;
+import com.example.database.frame.mapper.BaseMapper;
 import com.example.database.frame.mapper.MapperData;
 import com.example.database.frame.metadata.TableFieldInfo;
 import com.example.database.frame.metadata.TableInfoHelper;
@@ -16,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 public class Configuration {
     private Properties configProperties = new Properties();
@@ -25,6 +29,8 @@ public class Configuration {
     private DataSource dataSource;
 
     private List<String> mapperList;
+
+    private Set<Class<?>> annoMapperList;
 
     protected final Map<String, MapperData> mappers = new HashMap<>();
 
@@ -44,6 +50,8 @@ public class Configuration {
         scanMapper();
         //扫描实体
         scanEntity();
+        //扫描注解mapper
+        scanAnnoMapper();
     }
 
     public void loadConfigProperties() {
@@ -70,18 +78,27 @@ public class Configuration {
     }
 
     public void scanEntity() {
-        String packageName = configProperties.getProperty("entity.package");
-        Set<Class<?>> classes=ScannerUtil.scanClass(packageName);
-        TableInfoHelper.initTableInfo(this,classes);
+        String packageName = configProperties.getProperty("package.entity");
+        Set<Class<?>> classes = ScannerUtil.scanClass(packageName);
+        classes = classes.stream().filter(it -> it.isAnnotationPresent(TableName.class)).collect(Collectors.toSet());
+        if (classes.isEmpty()) {
+            return;
+        }
+        TableInfoHelper.initTableInfo(this, classes);
     }
 
-
+    public void scanAnnoMapper() {
+        String packageName = configProperties.getProperty("package.mapper");
+        Set<Class<?>> classes = ScannerUtil.scanClass(packageName);
+        this.annoMapperList = classes.stream()
+                                     .filter(it -> it.isAnnotationPresent(Mapper.class))
+                                     .filter(it -> it.getSuperclass().isAssignableFrom(BaseMapper.class))
+                                     .collect(Collectors.toSet());
+    }
 
     public void initDataSource() {
-        this.dataSource = new DataSource(configProperties.getProperty("jdbc.url"),
-                configProperties.getProperty("jdbc.driver"),
-                configProperties.getProperty("jdbc.username"),
-                configProperties.getProperty("jdbc.password"));
+        this.dataSource = new DataSource(configProperties.getProperty("jdbc.url"), configProperties.getProperty("jdbc.driver"),
+                                         configProperties.getProperty("jdbc.username"), configProperties.getProperty("jdbc.password"));
     }
 
     public boolean isResourceLoaded(String resource) {
@@ -95,6 +112,9 @@ public class Configuration {
     public void putMapperData(String key, MapperData mapperData) {
         mappers.put(key, mapperData);
     }
+    public boolean checkIsExist(String key) {
+        return mappers.containsKey(key);
+    }
 
     public MapperData getMapperData(String key) {
         return mappers.get(key);
@@ -106,6 +126,14 @@ public class Configuration {
 
     public List<String> getMapperList() {
         return mapperList;
+    }
+
+    public Set<Class<?>> getAnnoMapperList() {
+        return annoMapperList;
+    }
+
+    public void setAnnoMapperList(Set<Class<?>> annoMapperList) {
+        this.annoMapperList = annoMapperList;
     }
 
     public void setMapperList(List<String> mapperList) {
