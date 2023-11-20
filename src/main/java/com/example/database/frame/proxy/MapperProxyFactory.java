@@ -1,7 +1,6 @@
 package com.example.database.frame.proxy;
 
 import com.example.database.frame.config.Configuration;
-import com.example.database.frame.mapper.MapperData;
 import com.example.database.frame.mapper.MapperMethod;
 import com.example.database.frame.session.SqlSession;
 
@@ -24,7 +23,7 @@ public class MapperProxyFactory<T> {
     }
 
     public T newInstance(SqlSession sqlSession, Configuration configuration) {
-        final MapperProxy mapperProxy = new MapperProxy(configuration, sqlSession, methodCache);
+        final MapperProxy mapperProxy = new MapperProxy(configuration, sqlSession, mapperInterface, methodCache);
         return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[]{mapperInterface}, mapperProxy);
     }
 }

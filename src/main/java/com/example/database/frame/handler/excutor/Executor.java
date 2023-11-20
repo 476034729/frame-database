@@ -3,6 +3,7 @@ package com.example.database.frame.handler.excutor;
 import com.example.database.frame.builder.SqlSourceBuilder;
 import com.example.database.frame.config.Configuration;
 import com.example.database.frame.config.DataSource;
+import com.example.database.frame.exception.DataBaseFrameException;
 import com.example.database.frame.mapper.MapperData;
 import com.example.database.frame.mapping.SqlSource;
 import com.example.database.frame.util.StringUtils;
@@ -98,7 +99,7 @@ public class Executor implements IExecutor {
             writeMethod.invoke(obj, columnValue);
             return obj;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DataBaseFrameException(e);
         } finally {
             release(preparedStatement, resultSet);
         }
@@ -163,16 +164,16 @@ public class Executor implements IExecutor {
     }
 
     @Override
-    public void insert(MapperData mapperData, Object[] params) {
+    public int insert(MapperData mapperData, Object[] params) {
         PreparedStatement preparedStatement = null;
         String sql = mapperData.getSql();
+        SqlSource sqlSource = new SqlSourceBuilder().parse(sql);
         try {
-            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = connection.prepareStatement(sqlSource.getSql());
             setParameters(preparedStatement, params);
-            preparedStatement.executeUpdate();
-            connection.commit();
+            return preparedStatement.executeUpdate();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DataBaseFrameException(e);
         } finally {
             release(preparedStatement, null);
         }
@@ -188,8 +189,8 @@ public class Executor implements IExecutor {
                 preparedStatement.setString(i + 1, String.valueOf(parameters[i]));
             } else if (parameters[i] instanceof Boolean) {
                 preparedStatement.setBoolean(i + 1, (Boolean) parameters[i]);
-            } else if (parameters[i] instanceof Date) {
-                preparedStatement.setDate(i + 1, (Date) parameters[i]);
+            } else if (parameters[i] instanceof java.util.Date) {
+                preparedStatement.setDate(i + 1, new Date(((java.util.Date) parameters[i]).getTime()));
             } else {
                 preparedStatement.setString(i + 1, String.valueOf(parameters[i]));
             }

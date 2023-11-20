@@ -58,22 +58,22 @@ public class MapperMethod {
     }
 
     public Object execute(SqlSession sqlSession, Object[] args) throws Exception {
-        Map<String, Object> param;
         Object result = null;
         if (SqlCommandType.INSERT.equals(this.getSqlCommandType())) {
-            param = this.convertArgsToSqlCommandParam(args);
+            Object[] param = this.convertArgsToSqlCommandParam(args[0]);
+            result = sqlSession.insert(key, param);
         } else if (SqlCommandType.UPDATE.equals(this.getSqlCommandType())) {
-            param = this.convertArgsToSqlCommandParam(args);
+            this.convertArgsToSqlCommandParam(args);
         } else if (SqlCommandType.DELETE.equals(this.getSqlCommandType())) {
-            param = this.convertArgsToSqlCommandParam(args);
+            this.convertArgsToSqlCommandParam(args);
         } else {
-            param = this.convertArgsToSqlCommandParam(args);
+            Map<String, Object> param = this.convertArgsToSqlCommandParam(args);
             if (this.isIfReturnVoid()) {
-                result = null;
+                return null;
             } else if (this.isIfReturnMany()) {
-                result=sqlSession.selectList(key, param);
+                result = sqlSession.selectList(key, param);
             } else {
-                result=sqlSession.selectOne(key, param);
+                result = sqlSession.selectOne(key, param);
             }
         }
         return result;
@@ -106,13 +106,30 @@ public class MapperMethod {
         if (this.hasParamBody && paramCount == 1) {
             return objectToMap(args[0]);
         } else {
-            Map<String, Object> map =new HashMap<>(paramCount);
-            for (int i=0;i<paramCount;i++) {
+            Map<String, Object> map = new HashMap<>(paramCount);
+            for (int i = 0; i < paramCount; i++) {
                 map.put(params.get(i), args[i]);
             }
             return map;
         }
     }
+
+    public Object[] convertArgsToSqlCommandParam(Object object) {
+        // 使用反射获取对象的字段
+        Field[] fields = object.getClass().getDeclaredFields();
+        Object[] objects = new Object[fields.length];
+        try {
+            for (int i = 0; i < fields.length; i++) {
+                fields[i].setAccessible(true);
+                // 将字段的名称作为参数名，字段的值作为参数值放入map中
+                objects[i] = fields[i].get(object);
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return objects;
+    }
+
 
     private Map<String, Object> objectToMap(Object object) {
         // 使用反射获取对象的字段

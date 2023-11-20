@@ -47,8 +47,8 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
-    public int insert(String statementKey, Object parameters) {
-        return 0;
+    public int insert(String statementKey, Object[] params) {
+        return executor.insert(configuration.getMapperData(statementKey),params);
     }
 
     @Override

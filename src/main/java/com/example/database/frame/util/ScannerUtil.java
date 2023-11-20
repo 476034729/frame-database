@@ -24,7 +24,7 @@ public class ScannerUtil {
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
                 if ("file".equals(url.getProtocol())) {
-                    String file = URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8);
+                    String file = URLDecoder.decode(url.getFile(), "UTF-8");
                     findClassesInPackageByFile(packageName, file, true, classes);
                 }
             }

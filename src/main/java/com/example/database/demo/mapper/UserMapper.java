@@ -15,6 +15,6 @@ import java.util.List;
 public interface UserMapper extends BaseMapper<User> {
 
     List<User> queryList(String id,String name,String address);
-    List<User> queryListById(Long id);
+    User queryById(Long id);
 
 }

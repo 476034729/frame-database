@@ -16,5 +16,5 @@ public interface IExecutor {
 
     void close();
 
-    void insert(MapperData mapperData, Object[] params);
+    int insert(MapperData mapperData, Object[] params);
 }

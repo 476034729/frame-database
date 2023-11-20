@@ -92,7 +92,7 @@ public class Configuration {
         Set<Class<?>> classes = ScannerUtil.scanClass(packageName);
         this.annoMapperList = classes.stream()
                                      .filter(it -> it.isAnnotationPresent(Mapper.class))
-                                     .filter(it -> it.getSuperclass().isAssignableFrom(BaseMapper.class))
+                                     .filter(it -> it.getInterfaces()[0].isAssignableFrom(BaseMapper.class))
                                      .collect(Collectors.toSet());
     }
 

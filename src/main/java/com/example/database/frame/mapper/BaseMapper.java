@@ -17,5 +17,7 @@ public interface BaseMapper<T> {
 
     T selectById(Serializable id);
 
-    List<T> selectList();
+    T selectOne(T t);
+
+    List<T> selectList(T t);
 }

@@ -4,8 +4,8 @@
     <select id="queryList" resultType="com.example.database.demo.entity.User">
         select * from user
     </select>
-    <select id="queryListById" resultType="com.example.database.demo.entity.User">
-        select * from user
+    <select id="queryById" resultType="com.example.database.demo.entity.User">
+        select * from user where id=#{id}
     </select>
 </mapper>
 

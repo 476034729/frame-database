@@ -10,17 +10,18 @@ import com.example.database.frame.session.SqlSession;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.zip.DataFormatException;
 
 // 自定义MapperProxyFactory类
-public class MapperProxy implements InvocationHandler {
+public class MapperProxy<T> implements InvocationHandler {
     private final SqlSession sqlSession;
     private final Configuration configuration;
+    private final Class<T> mapperInterface;
     private final Map<Method, MapperMethod> methodCache;
 
-    public MapperProxy(Configuration configuration, SqlSession sqlSession, Map<Method, MapperMethod> methodCache) {
+    public MapperProxy(Configuration configuration, SqlSession sqlSession, Class<T> mapperInterface, Map<Method, MapperMethod> methodCache) {
         this.configuration = configuration;
         this.sqlSession = sqlSession;
+        this.mapperInterface = mapperInterface;
         this.methodCache = methodCache;
     }
 
@@ -31,7 +32,7 @@ public class MapperProxy implements InvocationHandler {
             return method.invoke(this, args);
         }
         String methodName = method.getName();
-        String className = method.getDeclaringClass().getName();
+        String className = mapperInterface.getName();
         String key = className + FrameConstants.HEAD_LINE + methodName;
         MapperData mapperData =configuration.getMapperData(key);
         if (mapperData == null) {

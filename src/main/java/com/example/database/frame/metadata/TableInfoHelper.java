@@ -6,14 +6,10 @@ import com.example.database.frame.annotation.TableField;
 import com.example.database.frame.annotation.TableId;
 import com.example.database.frame.annotation.TableName;
 import com.example.database.frame.config.Configuration;
-import com.example.database.frame.enums.SqlCommandType;
 
-import javax.crypto.KeyGenerator;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static java.util.stream.Collectors.toList;
 
 
 public class TableInfoHelper {
@@ -86,17 +82,20 @@ public class TableInfoHelper {
             TableName table = clazz.getAnnotation(TableName.class);
             tableInfo.setTableName(table.value());
             List<TableFieldInfo> tableFieldInfos = new ArrayList<>();
+            int i = 0;
             for (Field field : clazz.getDeclaredFields()) {
                 TableId tableId = field.getAnnotation(TableId.class);
                 if (tableId != null) {
                     tableInfo.setKeyColumn(tableId.value());
                     tableInfo.setKeyProperty(field.getName());
                     tableInfo.setKeyType(field.getType());
-                }else{
+                } else {
                     TableField tableField = field.getAnnotation(TableField.class);
-                    TableFieldInfo tableFieldInfo = new TableFieldInfo(field, tableField.value(), field.getName(), field.getType());
+                    TableFieldInfo tableFieldInfo = new TableFieldInfo(field, tableField.value(), field.getName(), field.getType(),
+                            i == clazz.getDeclaredFields().length - 1);
                     tableFieldInfos.add(tableFieldInfo);
                 }
+                i++;
             }
             tableInfo.setTableFieldInfos(tableFieldInfos);
             TABLE_INFO_CACHE.put(clazz, tableInfo);

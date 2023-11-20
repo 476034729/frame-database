@@ -19,7 +19,7 @@ public interface SqlSession {
     <T> List<T> selectList(String statementKey, Map<String,Object> parameters) throws Exception;
 
     <T> T selectOne(String statementKey, Map<String,Object> parameters);
-    int insert(String statementKey, Object parameters);
+    int insert(String statementKey, Object[] parameters);
 
     int update(String statementKey, Object parameters);
 

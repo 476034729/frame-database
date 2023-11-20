@@ -43,9 +43,9 @@ public class AnnoMapperBuilder {
                 }
                 Class<?> paramClass = method.getParameterTypes()[0];
                 MapperData mapperData = new MapperData(getSql(currentEntityClass, method.getName()),
-                                                       method.getReturnType(),
-                                                       paramClass.getName().equals(Object.class.getName()) ? currentEntityClass : paramClass,
-                                                       SqlCommandType.getType(method.getName()));
+                        method.getReturnType(),
+                        paramClass.getName().equals(Object.class.getName()) ? currentEntityClass : paramClass,
+                        SqlCommandType.getType(method.getName()));
                 configuration.putMapperData(key, mapperData);
             }
         }

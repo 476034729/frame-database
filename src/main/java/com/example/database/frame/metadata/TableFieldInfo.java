@@ -30,13 +30,19 @@ public class TableFieldInfo {
      * 属性类型
      */
     private final Class<?> propertyType;
+    private final Boolean ifLast;
 
-    public TableFieldInfo(Field field, String column, String property, Class<?> propertyType) {
+    public TableFieldInfo(Field field, String column, String property, Class<?> propertyType, Boolean ifLast) {
         this.field = field;
         this.column = column;
         this.property = property;
         this.propertyType = propertyType;
+        this.ifLast = ifLast;
         this.el = this.property;
+    }
+
+    public Boolean getIfLast() {
+        return ifLast;
     }
 
     public String getEl() {
@@ -60,13 +66,14 @@ public class TableFieldInfo {
     }
 
 
-    public String getInsertSqlColumnMaybeIf(final String prefix) {
-        String newPrefix = prefix == null ? "" : prefix;
+    public String getInsertSqlColumnMaybeIf(String newPrefix) {
         return this.getInsertSqlColumn();
     }
+
     public String getInsertSqlColumn() {
-        return this.column + ",";
+        return this.ifLast ? this.column : this.column + ",";
     }
+
     public String getInsertSqlPropertyMaybeIf(final String prefix) {
         String newPrefix = prefix == null ? "" : prefix;
         return this.getInsertSqlProperty(newPrefix);
@@ -74,6 +81,6 @@ public class TableFieldInfo {
 
     public String getInsertSqlProperty(final String prefix) {
         String newPrefix = prefix == null ? "" : prefix;
-        return SqlScriptUtils.safeParam(newPrefix + this.el) + ",";
+        return this.ifLast?SqlScriptUtils.safeParam(newPrefix + this.el):SqlScriptUtils.safeParam(newPrefix + this.el) + ",";
     }
 }

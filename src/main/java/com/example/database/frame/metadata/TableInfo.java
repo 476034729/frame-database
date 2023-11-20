@@ -110,9 +110,12 @@ public class TableInfo {
 
     public String getAllInsertSqlColumnMaybeIf(final String prefix) {
         String newPrefix = prefix == null ? "" : prefix;
-        return this.getKeyInsertSqlColumn(false, true) + (String) this.fieldList.stream().map((i) -> {
-            return i.getInsertSqlColumnMaybeIf(newPrefix);
-        }).filter(Objects::nonNull).collect(Collectors.joining("\n"));
+        return this.getKeyInsertSqlColumn(false, true) +
+                this.fieldList
+                        .stream()
+                        .map((i) -> i.getInsertSqlColumnMaybeIf(newPrefix))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.joining("\n"));
     }
 
     public String getKeyInsertSqlColumn(final boolean batch, final boolean newLine) {
@@ -125,7 +128,7 @@ public class TableInfo {
 
     public String getAllInsertSqlPropertyMaybeIf(final String prefix) {
         String newPrefix = prefix == null ? "" : prefix;
-        return this.getKeyInsertSqlProperty(false, newPrefix, true) + (String)this.fieldList.stream().map((i) -> {
+        return this.getKeyInsertSqlProperty(false, newPrefix, true) + (String) this.fieldList.stream().map((i) -> {
             return i.getInsertSqlPropertyMaybeIf(newPrefix);
         }).filter(Objects::nonNull).collect(Collectors.joining("\n"));
     }
