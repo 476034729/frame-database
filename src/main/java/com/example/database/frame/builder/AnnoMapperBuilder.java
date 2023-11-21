@@ -3,10 +3,12 @@ package com.example.database.frame.builder;
 import com.example.database.demo.mapper.UserMapper;
 import com.example.database.frame.builder.methods.AbstractMethod;
 import com.example.database.frame.builder.methods.Insert;
+import com.example.database.frame.builder.methods.SelectById;
 import com.example.database.frame.config.Configuration;
 import com.example.database.frame.constants.FrameConstants;
 import com.example.database.frame.enums.SqlCommandType;
 import com.example.database.frame.enums.SqlMethod;
+import com.example.database.frame.enums.SqlType;
 import com.example.database.frame.exception.DataBaseFrameException;
 import com.example.database.frame.mapper.BaseMapper;
 import com.example.database.frame.mapper.MapperData;
@@ -42,27 +44,29 @@ public class AnnoMapperBuilder {
                     continue;
                 }
                 Class<?> paramClass = method.getParameterTypes()[0];
-                MapperData mapperData = new MapperData(getSql(currentEntityClass, method.getName()),
+                TableInfo tableInfo = TableInfoHelper.getTableInfo(currentEntityClass);
+                if (null == tableInfo) {
+                    throw new DataBaseFrameException("table entity not exist");
+                }
+                MapperData mapperData = new MapperData(getSql(tableInfo, method.getName()),
                         method.getReturnType(),
                         paramClass.getName().equals(Object.class.getName()) ? currentEntityClass : paramClass,
-                        SqlCommandType.getType(method.getName()));
+                        SqlCommandType.getType(method.getName()), SqlType.ENTITY);
                 configuration.putMapperData(key, mapperData);
             }
         }
     }
 
-    private String getSql(Class<?> cla, String methodName) {
+    private String getSql(TableInfo tableInfo, String methodName) {
         AbstractMethod abstractMethod;
-        TableInfo tableInfo = TableInfoHelper.getTableInfo(cla);
-        if (null == tableInfo) {
-            throw new DataBaseFrameException("table entity not exist");
-        }
         if (methodName.equals(SqlMethod.INSERT_ONE.getMethod())) {
             abstractMethod = new Insert(configuration);
             return abstractMethod.getSql(tableInfo);
+        } else if (methodName.equals(SqlMethod.SELECT_BY_ID.getMethod())) {
+            abstractMethod = new SelectById(configuration);
+            return abstractMethod.getSql(tableInfo);
         }
         return "";
-
     }
 
 }

@@ -3,9 +3,11 @@ package com.example.database.frame.handler.excutor;
 import com.example.database.frame.builder.SqlSourceBuilder;
 import com.example.database.frame.config.Configuration;
 import com.example.database.frame.config.DataSource;
+import com.example.database.frame.constants.FrameConstants;
 import com.example.database.frame.exception.DataBaseFrameException;
 import com.example.database.frame.mapper.MapperData;
 import com.example.database.frame.mapping.SqlSource;
+import com.example.database.frame.util.SqlScriptUtils;
 import com.example.database.frame.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
@@ -33,13 +35,11 @@ public class Executor implements IExecutor {
      * @return 结果
      */
     @Override
-    public <T> List<T> selectList(MapperData mapperData, Map<String, Object> params) {
+    public <T> List<T> selectList(MapperData mapperData, Map<String, Object> params,Boolean ifXml) {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            // 取出SQL语句
-            String queryString = mapperData.getSql();
-            SqlSource sqlSource = new SqlSourceBuilder().parse(queryString);
+            SqlSource sqlSource = getSqlSource(mapperData.getSql(), params, ifXml);
             // 取出结果类型
             Class<?> resultClazz = mapperData.getResultType();
             // 获取PreparedStatement对象并执行
@@ -78,12 +78,11 @@ public class Executor implements IExecutor {
     }
 
     @Override
-    public <T> T selectOne(MapperData mapperData, Map<String, Object> params) {
+    public <T> T selectOne(MapperData mapperData, Map<String, Object> params,Boolean ifXml) {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            String queryString = mapperData.getSql();
-            SqlSource sqlSource = new SqlSourceBuilder().parse(queryString);
+            SqlSource sqlSource = getSqlSource(mapperData.getSql(), params, ifXml);
             Class<?> resultClazz = mapperData.getResultType();
             preparedStatement = connection.prepareStatement(sqlSource.getSql());
             setParameters(preparedStatement, getArgs(params, sqlSource.getParams()));
@@ -103,6 +102,14 @@ public class Executor implements IExecutor {
         } finally {
             release(preparedStatement, resultSet);
         }
+    }
+
+    private static SqlSource getSqlSource(String sql, Map<String, Object> params, Boolean ifXml) {
+        StringBuilder queryString = new StringBuilder(sql);
+        if(!ifXml) {
+            queryString.append(SqlScriptUtils.getWhereSql(params));
+        }
+        return new SqlSourceBuilder().parse(queryString.toString());
     }
 
     private Object castFieldType(Object obj) {
@@ -166,8 +173,7 @@ public class Executor implements IExecutor {
     @Override
     public int insert(MapperData mapperData, Object[] params) {
         PreparedStatement preparedStatement = null;
-        String sql = mapperData.getSql();
-        SqlSource sqlSource = new SqlSourceBuilder().parse(sql);
+        SqlSource sqlSource = new SqlSourceBuilder().parse(mapperData.getSql());
         try {
             preparedStatement = connection.prepareStatement(sqlSource.getSql());
             setParameters(preparedStatement, params);
@@ -178,6 +184,13 @@ public class Executor implements IExecutor {
             release(preparedStatement, null);
         }
     }
+
+    @Override
+    public int delete(MapperData mapperData, Object[] params, Boolean ifXml) {
+        PreparedStatement preparedStatement = null;
+        return 0;
+    }
+
 
     public void setParameters(PreparedStatement preparedStatement, Object[] parameters) throws SQLException {
         for (int i = 0; i < parameters.length; i++) {

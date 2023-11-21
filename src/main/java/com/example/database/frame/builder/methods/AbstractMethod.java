@@ -1,6 +1,7 @@
 package com.example.database.frame.builder.methods;
 
 import com.example.database.frame.config.Configuration;
+import com.example.database.frame.constants.FrameConstants;
 import com.example.database.frame.metadata.TableInfo;
 
 /**

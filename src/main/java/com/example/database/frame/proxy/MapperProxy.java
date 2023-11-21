@@ -45,7 +45,7 @@ public class MapperProxy<T> implements InvocationHandler {
     private MapperMethod cachedMapperMethod(Method method,MapperData mapperData,String key) {
         MapperMethod mapperMethod =this.methodCache.get(method);
         if (mapperMethod == null) {
-            mapperMethod = new MapperMethod(mapperData.getSqlCommandType(),method, key);
+            mapperMethod = new MapperMethod(mapperData.getSqlCommandType(), mapperData.getSqlType(), method, key);
             this.methodCache.put(method, mapperMethod);
         }
         return mapperMethod;

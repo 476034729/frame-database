@@ -1,12 +1,16 @@
 package com.example.database.frame.metadata;
 
 import com.example.database.frame.config.Configuration;
+import com.example.database.frame.constants.FrameConstants;
 import com.example.database.frame.util.SqlScriptUtils;
 import com.example.database.frame.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 public class TableInfo {
     private Configuration configuration;
@@ -37,6 +41,14 @@ public class TableInfo {
      * 表主键ID 属性类型
      */
     private Class<?> keyType;
+    /**
+     * 字段查询片段
+     */
+    private String sqlSelect;
+    /**
+     * 所有字段查询片段
+     */
+    private String allSqlSelect;
 
     /**
      * @param configuration 配置对象
@@ -46,6 +58,22 @@ public class TableInfo {
     public TableInfo(Configuration configuration, Class<?> entityType) {
         this.configuration = configuration;
         this.entityType = entityType;
+    }
+
+    public String getSqlSelect() {
+        return sqlSelect;
+    }
+
+    public void setSqlSelect(String sqlSelect) {
+        this.sqlSelect = sqlSelect;
+    }
+
+    public List<TableFieldInfo> getFieldList() {
+        return fieldList;
+    }
+
+    public void setFieldList(List<TableFieldInfo> fieldList) {
+        this.fieldList = fieldList;
     }
 
     public List<TableFieldInfo> getTableFieldInfos() {
@@ -144,4 +172,42 @@ public class TableInfo {
             return "";
         }
     }
+    public String getAllSqlSelect() {
+        if (allSqlSelect != null) {
+            return allSqlSelect;
+        }
+        allSqlSelect = chooseSelect(TableFieldInfo::isSelect);
+        return allSqlSelect;
+    }
+    public String getKeySqlSelect() {
+        if (sqlSelect != null) {
+            return sqlSelect;
+        }
+        if (havePK()) {
+            sqlSelect += (FrameConstants.AS + keyProperty);
+        } else {
+            sqlSelect = FrameConstants.EMPTY;
+        }
+        return sqlSelect;
+    }
+
+    public String chooseSelect(Predicate<TableFieldInfo> predicate) {
+        String sqlSelect = getKeySqlSelect();
+        String fieldsSqlSelect = fieldList.stream().filter(predicate)
+                .map(TableFieldInfo::getSqlSelect).collect(joining(FrameConstants.COMMA));
+        if (StringUtils.isNotBlank(sqlSelect) && StringUtils.isNotBlank(fieldsSqlSelect)) {
+            return sqlSelect + FrameConstants.COMMA + fieldsSqlSelect;
+        } else if (StringUtils.isNotBlank(fieldsSqlSelect)) {
+            return fieldsSqlSelect;
+        }
+        return sqlSelect;
+    }
+
+    public String getAllSqlSet() {
+        return fieldList
+                .stream()
+                .map(TableFieldInfo::getSqlSet)
+                .filter(Objects::nonNull).collect(joining(FrameConstants.NEWLINE));
+    }
+
 }

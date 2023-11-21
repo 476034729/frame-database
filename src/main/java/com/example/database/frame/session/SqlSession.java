@@ -16,13 +16,15 @@ public interface SqlSession {
      */
     <T> T getMapper(Class<T> tClass);
 
-    <T> List<T> selectList(String statementKey, Map<String,Object> parameters) throws Exception;
+    <T> List<T> selectList(String statementKey, Map<String,Object> parameters,Boolean ifXml) throws Exception;
 
-    <T> T selectOne(String statementKey, Map<String,Object> parameters);
+    <T> T selectOne(String statementKey, Map<String,Object> parameters,Boolean ifXml);
+    <T> T selectById(String statementKey, Object param);
     int insert(String statementKey, Object[] parameters);
 
     int update(String statementKey, Object parameters);
 
-    int delete(String statementKey, Object parameters);
+    int deleteById(String statementKey,Object param);
+    int delete(String statementKey,Map<String,Object> parameters,Boolean ifXml);
 
 }

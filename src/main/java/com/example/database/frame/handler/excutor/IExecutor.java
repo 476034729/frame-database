@@ -11,10 +11,11 @@ import java.util.Map;
  */
 public interface IExecutor {
 
-    <T> List<T> selectList(MapperData mapperData, Map<String,Object> params);
-    <T> T selectOne(MapperData mapperData, Map<String,Object> params);
+    <T> List<T> selectList(MapperData mapperData, Map<String,Object> params,Boolean ifXml);
+    <T> T selectOne(MapperData mapperData, Map<String,Object> params,Boolean ifXml);
 
     void close();
 
     int insert(MapperData mapperData, Object[] params);
+    int delete(MapperData mapperData, Object[] params,Boolean ifXml);
 }

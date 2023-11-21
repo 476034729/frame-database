@@ -2,6 +2,8 @@ package com.example.database.frame.mapper;
 
 import com.example.database.frame.annotation.ParamBody;
 import com.example.database.frame.enums.SqlCommandType;
+import com.example.database.frame.enums.SqlMethod;
+import com.example.database.frame.enums.SqlType;
 import com.example.database.frame.session.SqlSession;
 
 import java.lang.reflect.Field;
@@ -9,7 +11,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author tz
@@ -18,19 +19,31 @@ import java.util.stream.Stream;
 public class MapperMethod {
 
     private final SqlCommandType sqlCommandType;
+    private final SqlType sqlType;
     private final boolean ifReturnMany;
     private final boolean ifReturnVoid;
     private final List<String> params;
     private final boolean hasParamBody;
     private final String key;
+    private final String methodName;
 
-    public MapperMethod(SqlCommandType sqlCommandType, Method method, String key) {
+    public MapperMethod(SqlCommandType sqlCommandType, SqlType sqlType, Method method, String key ) {
         this.sqlCommandType = sqlCommandType;
+        this.sqlType = sqlType;
         this.ifReturnMany = Collection.class.isAssignableFrom(method.getReturnType());
         this.ifReturnVoid = Void.TYPE.equals(method.getReturnType());
         this.params = this.getParams(method);
         this.hasParamBody = isHasParamBody(method);
         this.key = key;
+        this.methodName = method.getName();
+    }
+
+    public SqlType getSqlType() {
+        return sqlType;
+    }
+
+    public String getMethodName() {
+        return methodName;
     }
 
     public String getKey() {
@@ -65,15 +78,20 @@ public class MapperMethod {
         } else if (SqlCommandType.UPDATE.equals(this.getSqlCommandType())) {
             this.convertArgsToSqlCommandParam(args);
         } else if (SqlCommandType.DELETE.equals(this.getSqlCommandType())) {
-            this.convertArgsToSqlCommandParam(args);
+            if(SqlMethod.DELETE_BY_ID.getMethod().equals(methodName)){
+                result = sqlSession.deleteById(key, args[0]);
+            }else {
+                result = sqlSession.delete(key,this.convertArgsToSqlCommandParam(args),SqlType.XML.equals(sqlType));
+            }
         } else {
-            Map<String, Object> param = this.convertArgsToSqlCommandParam(args);
             if (this.isIfReturnVoid()) {
                 return null;
             } else if (this.isIfReturnMany()) {
-                result = sqlSession.selectList(key, param);
-            } else {
-                result = sqlSession.selectOne(key, param);
+                result = sqlSession.selectList(key, this.convertArgsToSqlCommandParam(args),SqlType.XML.equals(sqlType));
+            } else if(SqlMethod.SELECT_BY_ID.getMethod().equals(methodName)){
+                result = sqlSession.selectById(key, args[0]);
+            }else {
+                result = sqlSession.selectOne(key, this.convertArgsToSqlCommandParam(args),SqlType.XML.equals(sqlType));
             }
         }
         return result;

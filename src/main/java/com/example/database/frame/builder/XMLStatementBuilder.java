@@ -2,6 +2,7 @@ package com.example.database.frame.builder;
 
 import com.example.database.frame.config.Configuration;
 import com.example.database.frame.enums.SqlCommandType;
+import com.example.database.frame.enums.SqlType;
 import com.example.database.frame.mapper.MapperData;
 import com.example.database.frame.parse.XNode;
 import com.example.database.frame.util.ResolveUtil;
@@ -36,7 +37,7 @@ public class XMLStatementBuilder {
         if (configuration.checkIsExist(key)) {
             return;
         }
-        MapperData mapperData = new MapperData(context.getStringBody().trim(), resultTypeClass, parameterTypeClass, sqlCommandType);
+        MapperData mapperData = new MapperData(context.getStringBody().trim(), resultTypeClass, parameterTypeClass, sqlCommandType, SqlType.XML);
         configuration.putMapperData(key, mapperData);
     }
 }
